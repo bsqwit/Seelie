@@ -19,38 +19,8 @@ local lp = Players.LocalPlayer
 
 
 
-local function _isC(fn)
-    if type(fn) ~= "function" then return false end
-    if type(iscclosure) ~= "function" then return true end 
-    local ok, r = pcall(iscclosure, fn)
-    return (not ok) or (r == true)
-end
-local function _tampered()
-    if not _isC(loadstring) then return "loadstring" end
-    if not _isC(game.HttpGet) then return "HttpGet" end
-    if not _isC(game.HttpGetAsync) then return "HttpGetAsync" end
-    local req = (syn and syn.request) or (http and http.request) or http_request or request
-        or (fluxus and fluxus.request)
-    if type(req) == "function" and not _isC(req) then return "request" end
-    if type(getrawmetatable) == "function" then
-        local ok, mt = pcall(getrawmetatable, game)
-        if ok and type(mt) == "table" then
-            local nc = rawget(mt, "__namecall")
-            if nc ~= nil and not _isC(nc) then return "namecall" end
-        end
-    end
-    return nil
-end
-local function _notify(msg)
-    pcall(function()
-        game:GetService("StarterGui"):SetCore("SendNotification",
-            { Title = "Seelie", Text = msg, Duration = 8 })
-    end)
-end
-if _tampered() then
-    _notify("обнаружено вмешательство — запуск отменён")
-    return
-end
+
+
 
 local function get_hwid()
     local h = "unknown"
@@ -238,8 +208,6 @@ local function submit()
     if key == "" then status.Text = "введите ключ"; return end
     busy = true; btn.Text = "Проверка..."; status.Text = ""
     task.spawn(function()
-        local t = _tampered()
-        if t then busy = false; btn.Text = "Войти"; status.Text = "вмешательство (" .. t .. ")"; return end
         local body = fetch(key, get_hwid())
         busy = false; btn.Text = "Войти"
         if not body or body == "" then status.Text = "сервер недоступен"; return end
