@@ -96,6 +96,70 @@ pcall(function()
 end)
 
 
+local LANGS = {
+    { "en", "English" }, { "ru", "Русский" }, { "pt", "Português" },
+    { "hi", "हिन्दी" }, { "es", "Español" }, { "id", "Indonesia" },
+}
+local TR = {
+    en = { login = "Login", checking = "Checking...", enter_key = "enter your key",
+        server_down = "server unavailable", code_err = "code error",
+        discord = "No key? Get one on Discord", copied = "Link copied — open it in your browser",
+        e_not_passed = "no key entered", e_not_found = "key not found", e_revoked = "key revoked",
+        e_expired = "key expired", e_no_hwid = "couldn't detect device",
+        e_bound = "key is bound to another device", e_internal = "server error" },
+    ru = { login = "Войти", checking = "Проверка...", enter_key = "введите ключ",
+        server_down = "сервер недоступен", code_err = "ошибка кода",
+        discord = "Нет ключа? Получить в Discord", copied = "Ссылка скопирована — открой в браузере",
+        e_not_passed = "не передан ключ", e_not_found = "ключ не найден", e_revoked = "ключ отозван",
+        e_expired = "ключ просрочен", e_no_hwid = "не удалось определить HWID",
+        e_bound = "ключ привязан к другому устройству", e_internal = "внутренняя ошибка сервера" },
+    pt = { login = "Entrar", checking = "Verificando...", enter_key = "digite sua chave",
+        server_down = "servidor indisponível", code_err = "erro de código",
+        discord = "Sem chave? Pegue no Discord", copied = "Link copiado — abra no navegador",
+        e_not_passed = "nenhuma chave informada", e_not_found = "chave não encontrada", e_revoked = "chave revogada",
+        e_expired = "chave expirada", e_no_hwid = "não foi possível identificar o dispositivo",
+        e_bound = "chave vinculada a outro dispositivo", e_internal = "erro no servidor" },
+    hi = { login = "लॉग इन करें", checking = "जाँच हो रही है...", enter_key = "अपनी कुंजी दर्ज करें",
+        server_down = "सर्वर उपलब्ध नहीं है", code_err = "कोड त्रुटि",
+        discord = "कुंजी नहीं है? Discord पर पाएं", copied = "लिंक कॉपी हो गया — ब्राउज़र में खोलें",
+        e_not_passed = "कोई कुंजी दर्ज नहीं की", e_not_found = "कुंजी नहीं मिली", e_revoked = "कुंजी रद्द कर दी गई",
+        e_expired = "कुंजी की समय सीमा समाप्त", e_no_hwid = "डिवाइस की पहचान नहीं हुई",
+        e_bound = "कुंजी दूसरे डिवाइस से जुड़ी है", e_internal = "सर्वर त्रुटि" },
+    es = { login = "Entrar", checking = "Verificando...", enter_key = "ingresa tu clave",
+        server_down = "servidor no disponible", code_err = "error de código",
+        discord = "¿Sin clave? Consíguela en Discord", copied = "Enlace copiado — ábrelo en el navegador",
+        e_not_passed = "no se ingresó ninguna clave", e_not_found = "clave no encontrada", e_revoked = "clave revocada",
+        e_expired = "clave expirada", e_no_hwid = "no se pudo identificar el dispositivo",
+        e_bound = "la clave está vinculada a otro dispositivo", e_internal = "error del servidor" },
+    id = { login = "Masuk", checking = "Memeriksa...", enter_key = "masukkan kunci kamu",
+        server_down = "server tidak tersedia", code_err = "kesalahan kode",
+        discord = "Tidak punya kunci? Dapatkan di Discord", copied = "Tautan disalin — buka di browser",
+        e_not_passed = "kunci belum dimasukkan", e_not_found = "kunci tidak ditemukan", e_revoked = "kunci dicabut",
+        e_expired = "kunci kedaluwarsa", e_no_hwid = "tidak dapat mendeteksi perangkat",
+        e_bound = "kunci terhubung ke perangkat lain", e_internal = "kesalahan server" },
+}
+
+local ERRMAP = {
+    ["не передан ключ"] = "e_not_passed", ["ключ не найден"] = "e_not_found", ["ключ отозван"] = "e_revoked",
+    ["ключ просрочен"] = "e_expired", ["не удалось определить HWID"] = "e_no_hwid",
+    ["ключ привязан к другому устройству"] = "e_bound", ["внутренняя ошибка сервера"] = "e_internal",
+}
+local lang = "en"
+pcall(function()
+    if type(isfile) == "function" and isfile("s2lang.txt") then
+        local v = tostring(readfile("s2lang.txt")):gsub("%s+", "")
+        if TR[v] then lang = v end
+    end
+end)
+local function tr(k)
+    return (TR[lang] and TR[lang][k]) or TR.en[k] or k
+end
+local function tr_err(raw)
+    local m = ERRMAP[raw or ""]
+    return m and tr(m) or raw
+end
+
+
 local parent
 pcall(function() parent = (gethui and gethui()) or game:GetService("CoreGui") end)
 if not parent then parent = lp:WaitForChild("PlayerGui") end
@@ -167,7 +231,7 @@ local btn = Instance.new("TextButton")
 btn.Position = UDim2.new(0.5, -146, 0, 270); btn.Size = UDim2.fromOffset(292, 40)
 btn.BackgroundColor3 = Color3.fromRGB(240, 240, 245); btn.BorderSizePixel = 0
 btn.Font = Enum.Font.GothamBold; btn.TextSize = 15; btn.TextColor3 = Color3.fromRGB(16, 16, 20)
-btn.Text = "Войти"; btn.AutoButtonColor = true
+btn.Text = tr("login"); btn.AutoButtonColor = true
 btn.Parent = main
 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 9)
 
@@ -186,7 +250,7 @@ local discord = Instance.new("TextButton")
 discord.Position = UDim2.new(0.5, -146, 0, 344); discord.Size = UDim2.fromOffset(292, 36)
 discord.BackgroundColor3 = Color3.fromRGB(18, 18, 22); discord.BorderSizePixel = 0
 discord.Font = Enum.Font.GothamMedium; discord.TextSize = 14; discord.TextColor3 = Color3.fromRGB(140, 150, 245)
-discord.Text = "Нет ключа? Получить в Discord"; discord.AutoButtonColor = true
+discord.Text = tr("discord"); discord.AutoButtonColor = true
 discord.Parent = main
 Instance.new("UICorner", discord).CornerRadius = UDim.new(0, 9)
 local dstroke = Instance.new("UIStroke", discord)
@@ -195,7 +259,7 @@ discord.MouseButton1Click:Connect(function()
     pcall(function() if type(setclipboard) == "function" then setclipboard(INVITE) end end)
     pcall(function() game:GetService("GuiService"):OpenBrowserWindow(INVITE) end)
     status.TextColor3 = Color3.fromRGB(120, 200, 140)
-    status.Text = "Ссылка скопирована — открой в браузере"
+    status.Text = tr("copied")
 end)
 
 local close = Instance.new("TextButton")
@@ -204,6 +268,52 @@ close.BackgroundTransparency = 1; close.Font = Enum.Font.GothamBold; close.TextS
 close.TextColor3 = Color3.fromRGB(140, 140, 150); close.Text = "X"
 close.Parent = main
 close.MouseButton1Click:Connect(function() gui:Destroy() end)
+
+
+local langBtn = Instance.new("TextButton")
+langBtn.Position = UDim2.fromOffset(12, 8); langBtn.Size = UDim2.fromOffset(62, 24)
+langBtn.BackgroundColor3 = Color3.fromRGB(18, 18, 22); langBtn.BorderSizePixel = 0
+langBtn.Font = Enum.Font.GothamMedium; langBtn.TextSize = 13; langBtn.TextColor3 = Color3.fromRGB(205, 205, 214)
+langBtn.Text = "EN"; langBtn.AutoButtonColor = true; langBtn.Parent = main
+Instance.new("UICorner", langBtn).CornerRadius = UDim.new(0, 7)
+local lstroke = Instance.new("UIStroke", langBtn)
+lstroke.Color = Color3.fromRGB(255, 255, 255); lstroke.Thickness = 1; lstroke.Transparency = 0.85
+
+local langList = Instance.new("Frame")
+langList.Position = UDim2.fromOffset(12, 36); langList.Size = UDim2.fromOffset(140, #LANGS * 30 + 8)
+langList.BackgroundColor3 = Color3.fromRGB(13, 13, 16); langList.BorderSizePixel = 0
+langList.Visible = false; langList.ZIndex = 20; langList.Parent = main
+Instance.new("UICorner", langList).CornerRadius = UDim.new(0, 8)
+local llstroke = Instance.new("UIStroke", langList)
+llstroke.Color = Color3.fromRGB(255, 255, 255); llstroke.Thickness = 1; llstroke.Transparency = 0.8
+local llpad = Instance.new("UIPadding", langList)
+llpad.PaddingTop = UDim.new(0, 4); llpad.PaddingBottom = UDim.new(0, 4)
+local lllayout = Instance.new("UIListLayout", langList); lllayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local function applyLang()
+    langBtn.Text = lang:upper()
+    btn.Text = tr("login")
+    discord.Text = tr("discord")
+    status.Text = ""
+end
+
+for idx, entry in ipairs(LANGS) do
+    local code, label = entry[1], entry[2]
+    local opt = Instance.new("TextButton")
+    opt.Size = UDim2.new(1, 0, 0, 30); opt.BackgroundTransparency = 1; opt.LayoutOrder = idx
+    opt.Font = Enum.Font.Gotham; opt.TextSize = 14; opt.ZIndex = 21
+    opt.TextXAlignment = Enum.TextXAlignment.Left; opt.TextColor3 = Color3.fromRGB(228, 228, 235)
+    opt.Text = "   " .. label; opt.AutoButtonColor = true; opt.Parent = langList
+    opt.MouseButton1Click:Connect(function()
+        lang = code
+        pcall(function() if type(writefile) == "function" then writefile("s2lang.txt", code) end end)
+        langList.Visible = false
+        applyLang()
+    end)
+end
+
+langBtn.MouseButton1Click:Connect(function() langList.Visible = not langList.Visible end)
+applyLang()
 
 
 do
@@ -231,16 +341,17 @@ local busy = false
 local function submit()
     if busy then return end
     local key = (box.Text or ""):gsub("%s+", "")
-    if key == "" then status.Text = "введите ключ"; return end
-    busy = true; btn.Text = "Проверка..."; status.Text = ""
+    status.TextColor3 = Color3.fromRGB(235, 110, 110)
+    if key == "" then status.Text = tr("enter_key"); return end
+    busy = true; btn.Text = tr("checking"); status.Text = ""
     task.spawn(function()
         local body = fetch(key, get_hwid())
-        busy = false; btn.Text = "Войти"
-        if not body or body == "" then status.Text = "сервер недоступен"; return end
+        busy = false; btn.Text = tr("login")
+        if not body or body == "" then status.Text = tr("server_down"); return end
         local err = body:match("^%-%-SEELIE%-ERR:([^\n]*)")
-        if err then status.Text = err; return end
+        if err then status.Text = tr_err(err); return end
         local f = loadstring(body)
-        if not f then status.Text = "ошибка кода"; return end
+        if not f then status.Text = tr("code_err"); return end
         pcall(function() if type(writefile) == "function" then writefile("s2key.txt", key) end end)
         gui:Destroy()
         pcall(f)
