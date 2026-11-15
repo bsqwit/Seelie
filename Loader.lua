@@ -7,7 +7,7 @@
 
 
 
-local BASE = "https://seelie.ssixsevenn.xyz:8443" 
+local BASE = "https://seelie.ssixsevenn.xyz" 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local UIS = game:GetService("UserInputService")
