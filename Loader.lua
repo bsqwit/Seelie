@@ -48,7 +48,7 @@ local function _notify(msg)
     end)
 end
 if _tampered() then
-    _notify("Ð¾Ð±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½Ð¾ Ð²Ð¼ÐµÑˆÐ°Ñ‚ÐµÐ»ÑŒÑÑ‚Ð²Ð¾ â€” Ð·Ð°Ð¿ÑƒÑÐº Ð¾Ñ‚Ð¼ÐµÐ½Ñ‘Ð½")
+    _notify("обнаружено вмешательство — запуск отменён")
     return
 end
 
@@ -191,7 +191,7 @@ local btn = Instance.new("TextButton")
 btn.Position = UDim2.new(0.5, -146, 0, 270); btn.Size = UDim2.fromOffset(292, 40)
 btn.BackgroundColor3 = Color3.fromRGB(240, 240, 245); btn.BorderSizePixel = 0
 btn.Font = Enum.Font.GothamBold; btn.TextSize = 15; btn.TextColor3 = Color3.fromRGB(16, 16, 20)
-btn.Text = "Ð’Ð¾Ð¹Ñ‚Ð¸"; btn.AutoButtonColor = true
+btn.Text = "Войти"; btn.AutoButtonColor = true
 btn.Parent = main
 Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 9)
 
@@ -235,18 +235,18 @@ local busy = false
 local function submit()
     if busy then return end
     local key = (box.Text or ""):gsub("%s+", "")
-    if key == "" then status.Text = "Ð²Ð²ÐµÐ´Ð¸Ñ‚Ðµ ÐºÐ»ÑŽÑ‡"; return end
-    busy = true; btn.Text = "ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ°..."; status.Text = ""
+    if key == "" then status.Text = "введите ключ"; return end
+    busy = true; btn.Text = "Проверка..."; status.Text = ""
     task.spawn(function()
         local t = _tampered()
-        if t then busy = false; btn.Text = "Ð’Ð¾Ð¹Ñ‚Ð¸"; status.Text = "Ð²Ð¼ÐµÑˆÐ°Ñ‚ÐµÐ»ÑŒÑÑ‚Ð²Ð¾ (" .. t .. ")"; return end
+        if t then busy = false; btn.Text = "Войти"; status.Text = "вмешательство (" .. t .. ")"; return end
         local body = fetch(key, get_hwid())
-        busy = false; btn.Text = "Ð’Ð¾Ð¹Ñ‚Ð¸"
-        if not body or body == "" then status.Text = "ÑÐµÑ€Ð²ÐµÑ€ Ð½ÐµÐ´Ð¾ÑÑ‚ÑƒÐ¿ÐµÐ½"; return end
+        busy = false; btn.Text = "Войти"
+        if not body or body == "" then status.Text = "сервер недоступен"; return end
         local err = body:match("^%-%-SEELIE%-ERR:([^\n]*)")
         if err then status.Text = err; return end
         local f = loadstring(body)
-        if not f then status.Text = "Ð¾ÑˆÐ¸Ð±ÐºÐ° ÐºÐ¾Ð´Ð°"; return end
+        if not f then status.Text = "ошибка кода"; return end
         pcall(function() if type(writefile) == "function" then writefile("s2key.txt", key) end end)
         gui:Destroy()
         pcall(f)
