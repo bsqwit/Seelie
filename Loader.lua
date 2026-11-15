@@ -115,8 +115,8 @@ if not pcall(function() gui.Parent = parent end) then
 end
 
 local main = Instance.new("Frame")
-main.Size = UDim2.fromOffset(360, 340)
-main.Position = UDim2.new(0.5, -180, 0.5, -170)
+main.Size = UDim2.fromOffset(360, 392)
+main.Position = UDim2.new(0.5, -180, 0.5, -196)
 main.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 main.BorderSizePixel = 0
 main.Parent = gui
@@ -177,6 +177,26 @@ status.Position = UDim2.fromOffset(0, 316); status.Size = UDim2.new(1, 0, 0, 18)
 status.Font = Enum.Font.Gotham; status.TextSize = 13
 status.TextColor3 = Color3.fromRGB(235, 110, 110); status.Text = ""
 status.Parent = main
+
+
+
+
+local INVITE = "https://discord.gg/Gmz6WcXWrr"
+local discord = Instance.new("TextButton")
+discord.Position = UDim2.new(0.5, -146, 0, 344); discord.Size = UDim2.fromOffset(292, 36)
+discord.BackgroundColor3 = Color3.fromRGB(18, 18, 22); discord.BorderSizePixel = 0
+discord.Font = Enum.Font.GothamMedium; discord.TextSize = 14; discord.TextColor3 = Color3.fromRGB(140, 150, 245)
+discord.Text = "Нет ключа? Получить в Discord"; discord.AutoButtonColor = true
+discord.Parent = main
+Instance.new("UICorner", discord).CornerRadius = UDim.new(0, 9)
+local dstroke = Instance.new("UIStroke", discord)
+dstroke.Color = Color3.fromRGB(88, 101, 242); dstroke.Thickness = 1; dstroke.Transparency = 0.4
+discord.MouseButton1Click:Connect(function()
+    pcall(function() if type(setclipboard) == "function" then setclipboard(INVITE) end end)
+    pcall(function() game:GetService("GuiService"):OpenBrowserWindow(INVITE) end)
+    status.TextColor3 = Color3.fromRGB(120, 200, 140)
+    status.Text = "Ссылка скопирована — открой в браузере"
+end)
 
 local close = Instance.new("TextButton")
 close.Position = UDim2.new(1, -32, 0, 8); close.Size = UDim2.fromOffset(24, 24)
