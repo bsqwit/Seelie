@@ -24,13 +24,19 @@ local lp = Players.LocalPlayer
 
 local function get_hwid()
     local h = "unknown"
+    
+    
+    
+    
+    
     pcall(function()
-        if type(gethwid) == "function" then
-            h = tostring(gethwid())
-        else
-            h = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
-        end
+        h = tostring(game:GetService("RbxAnalyticsService"):GetClientId())
     end)
+    if h == "unknown" or h == "" or h == "nil" then
+        pcall(function()
+            if type(gethwid) == "function" then h = tostring(gethwid()) end
+        end)
+    end
     return h
 end
 
