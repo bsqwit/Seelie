@@ -7,7 +7,7 @@
 
 
 
-local BASE = "https://seelie.ssixsevenn.xyz" 
+local BASE = "https://seelie-auth.ojars9111.workers.dev" 
 local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 local UIS = game:GetService("UserInputService")
