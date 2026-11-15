@@ -38,9 +38,15 @@ local function fetch(key, hwid)
     local req = (syn and syn.request) or (http and http.request) or http_request or request
         or (fluxus and fluxus.request)
     if type(req) == "function" then
+        
+        
         local ok, r = pcall(req, {
             Url = BASE .. "/auth", Method = "POST",
-            Headers = { ["Content-Type"] = "application/json" },
+            Headers = {
+                ["Content-Type"] = "application/json",
+                ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+                ["Accept"] = "*/*",
+            },
             Body = HttpService:JSONEncode({ key = key, hwid = hwid, v = 1 }),
         })
         if ok and type(r) == "table" and (r.Body or r.body) then return r.Body or r.body end
